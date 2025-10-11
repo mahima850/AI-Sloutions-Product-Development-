@@ -1,0 +1,120 @@
+{% load static %}
+<footer class="bg-dark text-white py-4">
+  <div class="container">
+    <div class="row">
+      <!-- Brand -->
+      <div class="col-lg-4 mb-4">
+        <div class="d-flex align-items-center mb-2">
+          <span class="bg-primary px-2 py-1 rounded me-2 fw-bold">AI</span>
+          <span class="fs-5 fw-bold">AI-Solution</span>
+        </div>
+        <p class="small text-light">
+          Empowering businesses with AI solutions for healthcare, finance, and
+          education.
+        </p>
+        <div class="d-flex gap-3">
+          {% if settings.social_facebook %}
+          <a href="{{ settings.social_facebook }}" class="text-light"
+            ><i class="bi bi-facebook"></i
+          ></a>
+          {% endif %} {% if settings.social_twitter %}
+          <a href="{{ settings.social_twitter }}" class="text-light"
+            ><i class="bi bi-twitter"></i
+          ></a>
+          {% endif %} {% if settings.social_linkedin %}
+          <a href="{{ settings.social_linkedin }}" class="text-light"
+            ><i class="bi bi-linkedin"></i
+          ></a>
+          {% endif %} {% if settings.social_instagram %}
+          <a href="{{ settings.social_instagram }}" class="text-light"
+            ><i class="bi bi-instagram"></i
+          ></a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Solutions -->
+      <div class="col-lg-2 col-md-6 mb-4">
+        <h6 class="fw-bold">Solutions</h6>
+        <ul class="list-unstyled small">
+          <li>
+            <a
+              href="{% url 'solutions' %}?category=healthcare"
+              class="text-light text-decoration-none"
+              >Healthcare AI</a
+            >
+          </li>
+          <li>
+            <a
+              href="{% url 'solutions' %}?category=finance"
+              class="text-light text-decoration-none"
+              >Finance AI</a
+            >
+          </li>
+          <li>
+            <a
+              href="{% url 'solutions' %}?category=education"
+              class="text-light text-decoration-none"
+              >Education AI</a
+            >
+          </li>
+        </ul>
+      </div>
+
+      <!-- Company -->
+      <div class="col-lg-2 col-md-6 mb-4">
+        <h6 class="fw-bold">Company</h6>
+        <ul class="list-unstyled small">
+          <li>
+            <a href="{% url 'about' %}" class="text-light text-decoration-none"
+              >About Us</a
+            >
+          </li>
+          <li>
+            <a href="{% url 'blog' %}" class="text-light text-decoration-none"
+              >Blog</a
+            >
+          </li>
+          <li>
+            <a href="{% url 'events' %}" class="text-light text-decoration-none"
+              >Events</a
+            >
+          </li>
+          <li>
+            <a
+              href="{% url 'contact' %}"
+              class="text-light text-decoration-none"
+              >Contact</a
+            >
+          </li>
+        </ul>
+      </div>
+
+      <!-- Newsletter -->
+      <div class="col-lg-4 mb-4">
+        <h6 class="fw-bold">Newsletter</h6>
+        <form method="post" class="d-flex">
+          {% csrf_token %}
+          <input
+            type="email"
+            name="email"
+            class="form-control me-2"
+            placeholder="Your email"
+            required
+          />
+          <button type="submit" class="btn btn-primary">Subscribe</button>
+        </form>
+      </div>
+    </div>
+
+    <hr class="border-light" />
+
+    <div class="d-flex justify-content-between flex-wrap small">
+      <p class="mb-0">&copy; {% now "Y" %} AI-Solution. All rights reserved.</p>
+      <p class="mb-0">
+        <i class="bi bi-envelope me-1 text-primary"></i>
+        {{settings.contact_email }}
+      </p>
+    </div>
+  </div>
+</footer>

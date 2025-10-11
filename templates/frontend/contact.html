@@ -1,0 +1,367 @@
+{% extends 'base.html' %} {% load static %} {% block title %} Contact Us -
+{{settings.site_name }}{% endblock %} {% block content %}
+<!-- Page Header -->
+<section class="bg-primary text-white py-5" style="margin-top: 80px">
+  <div class="container py-4">
+    <div class="row">
+      <div class="col-lg-8 mx-auto text-center">
+        <h1 class="display-4 fw-bold mb-3">Contact Us</h1>
+        <p class="lead">
+          Get in touch with our team to discuss your AI solution needs
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Form Section -->
+<section class="py-5">
+  <div class="container">
+    <div class="row">
+      <!-- Contact Form -->
+      <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+          <div class="card-body p-4">
+            <h3 class="fw-bold mb-4">Send us a Message</h3>
+
+            <form method="POST" enctype="multipart/form-data" id="contactForm">
+              {% csrf_token %}
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="{{ form.name.id_for_label }}" class="form-label"
+                    >Full Name *</label
+                  >
+                  {{ form.name }} {% if form.name.errors %}
+                  <div class="text-danger small">{{ form.name.errors.0 }}</div>
+                  {% endif %}
+                </div>
+                <div class="col-md-6">
+                  <label for="{{ form.email.id_for_label }}" class="form-label"
+                    >Email Address *</label
+                  >
+                  {{ form.email }} {% if form.email.errors %}
+                  <div class="text-danger small">{{ form.email.errors.0 }}</div>
+                  {% endif %}
+                </div>
+                <div class="col-md-6">
+                  <label for="{{ form.phone.id_for_label }}" class="form-label"
+                    >Phone Number</label
+                  >
+                  {{ form.phone }} {% if form.phone.errors %}
+                  <div class="text-danger small">{{ form.phone.errors.0 }}</div>
+                  {% endif %}
+                </div>
+                <div class="col-md-6">
+                  <label
+                    for="{{ form.company.id_for_label }}"
+                    class="form-label"
+                    >Company/Organization</label
+                  >
+                  {{ form.company }} {% if form.company.errors %}
+                  <div class="text-danger small">
+                    {{ form.company.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+                <div class="col-md-6">
+                  <label
+                    for="{{ form.country.id_for_label }}"
+                    class="form-label"
+                    >Country</label
+                  >
+                  {{ form.country }} {% if form.country.errors %}
+                  <div class="text-danger small">
+                    {{ form.country.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+                <div class="col-md-6">
+                  <label
+                    for="{{ form.job_title.id_for_label }}"
+                    class="form-label"
+                    >Job Title</label
+                  >
+                  {{ form.job_title }} {% if form.job_title.errors %}
+                  <div class="text-danger small">
+                    {{ form.job_title.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+                <div class="col-12">
+                  <label
+                    for="{{ form.message.id_for_label }}"
+                    class="form-label"
+                    >Message *</label
+                  >
+                  {{ form.message }} {% if form.message.errors %}
+                  <div class="text-danger small">
+                    {{ form.message.errors.0 }}
+                  </div>
+                  {% endif %}
+                </div>
+                <div class="col-12">
+                  <label
+                    for="{{ form.attachment.id_for_label }}"
+                    class="form-label"
+                    >Attachment (Optional)</label
+                  >
+                  {{ form.attachment }} {% if form.attachment.errors %}
+                  <div class="text-danger small">
+                    {{ form.attachment.errors.0 }}
+                  </div>
+                  {% endif %}
+                  <div class="form-text">
+                    Supported formats: PDF, DOC, DOCX, TXT (Max: 10MB)
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                <button type="reset" class="btn btn-outline-secondary">
+                  Clear Form
+                </button>
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi bi-send me-1"></i>Send Message
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Information -->
+      <div class="col-lg-4">
+        <div class="card bg-primary text-white border-0">
+          <div class="card-body p-4">
+            <h4 class="fw-bold mb-4">Get in Touch</h4>
+
+            <div class="d-flex align-items-start mb-3">
+              <i class="bi bi-envelope-fill me-3 mt-1"></i>
+              <div>
+                <h6 class="mb-1">Email</h6>
+                <a
+                  href="mailto:{{ settings.contact_email }}"
+                  class="text-white text-decoration-none"
+                >
+                  {{ settings.contact_email }}
+                </a>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-start mb-3">
+              <i class="bi bi-telephone-fill me-3 mt-1"></i>
+              <div>
+                <h6 class="mb-1">Phone</h6>
+                <p class="mb-0">+977(9847236510)</p>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-start mb-4">
+              <i class="bi bi-geo-alt-fill me-3 mt-1"></i>
+              <div>
+                <h6 class="mb-1">Address</h6>
+                <p class="mb-0">Kalikanagar-10, Butwal, Nepal</p>
+              </div>
+            </div>
+
+            <hr class="my-4 border-white border-opacity-25" />
+
+            <h6 class="mb-3">Follow Us</h6>
+            <div class="d-flex gap-3">
+              <a href="https://www.facebook.com/" class="text-white">
+                <i class="bi bi-facebook fs-5"></i>
+              </a>
+              <a href="https://x.com/" class="text-white">
+                <i class="bi bi-twitter fs-5"></i>
+              </a>
+              <a href="http://www.linkedin.com/" class="text-white">
+                <i class="bi bi-linkedin fs-5"></i>
+              </a>
+              <a href="https://www.instagram.com/" class="text-white">
+                <i class="bi bi-instagram fs-5"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card border-0 shadow-sm mt-4">
+          <div class="card-body p-4">
+            <h5 class="fw-bold mb-3">Quick Actions</h5>
+
+            <div class="d-grid gap-2">
+              <button class="btn btn-outline-primary" onclick="scheduleDemo()">
+                <i class="bi bi-calendar-event me-2"></i>Schedule a Demo
+              </button>
+              <button class="btn btn-outline-success" onclick="requestQuote()">
+                <i class="bi bi-calculator me-2"></i>Request Quote
+              </button>
+              <a href="{% url 'solutions' %}" class="btn btn-outline-info">
+                <i class="bi bi-lightbulb me-2"></i>View Solutions
+              </a>
+            </div>
+          </div>
+        </div>
+<!-- Feedback Section -->
+<div class="card border-0 shadow-sm mt-4">
+  <div class="card-body p-4">
+    <h5 class="fw-bold mb-3">Share Your Feedback</h5>
+    <p class="text-muted small mb-3">Help us improve by sharing your experience</p>
+
+    <form id="feedbackForm" method="post" action="{% url 'submit_feedback' %}" novalidate>
+      {% csrf_token %}
+
+      <!-- Rating -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Rating</label>
+        <div class="d-flex gap-1 mb-2">
+          <i class="bi bi-star feedback-star" data-rating="1"></i>
+          <i class="bi bi-star feedback-star" data-rating="2"></i>
+          <i class="bi bi-star feedback-star" data-rating="3"></i>
+          <i class="bi bi-star feedback-star" data-rating="4"></i>
+          <i class="bi bi-star feedback-star" data-rating="5"></i>
+        </div>
+        <input type="hidden" id="feedbackRating" name="rating" value="5"/>
+      </div>
+
+      <!-- Name -->
+      <div class="mb-3">
+        <input type="text" class="form-control form-control-sm" id="feedbackName" name="name" placeholder="Your Name" required/>
+      </div>
+
+      <!-- Email -->
+      <div class="mb-3">
+        <input type="email" class="form-control form-control-sm" id="feedbackEmail" name="email" placeholder="Your Email" required/>
+      </div>
+
+      <!-- Comment -->
+      <div class="mb-3">
+        <textarea class="form-control form-control-sm" id="feedbackComment" name="comment" rows="3" placeholder="Your feedback..." required></textarea>
+      </div>
+
+      <!-- IMPORTANT: type="button" so the browser never submits the form -->
+      <button id="feedbackSubmit" type="button" class="btn btn-primary btn-sm w-100">
+        <i class="bi bi-send me-1"></i>Submit Feedback
+      </button>
+
+      <div id="feedbackMessage" class="mt-2"></div>
+    </form>
+  </div>
+</div>
+
+{% block extra_css %}
+<style>
+  .feedback-star { font-size: 1.2rem; color: #ffc107; cursor: pointer; transition: color .2s; }
+  .feedback-star:hover { color: #ffb300; }
+  .feedback-star.text-muted { color: #dee2e6 !important; }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ---- CSRF helper (Django docs) ----
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + "=")) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+const csrftoken = getCookie("csrftoken");
+
+document.addEventListener("DOMContentLoaded", () => {
+  // If somehow multiple forms exist with same ID, only bind once.
+  const forms = document.querySelectorAll("#feedbackForm");
+  if (forms.length !== 1) {
+    console.warn("Expected exactly one #feedbackForm. Found:", forms.length);
+  }
+  const form = forms[0];
+
+  // Hard stop any native submit from anywhere (safety net)
+  form.addEventListener("submit", (e) => e.preventDefault());
+
+  const stars = document.querySelectorAll(".feedback-star");
+  const ratingInput = document.getElementById("feedbackRating");
+  const messageDiv = document.getElementById("feedbackMessage");
+  const submitBtn = document.getElementById("feedbackSubmit");
+
+  // Prevent double-binding if this script is injected twice
+  if (form.dataset.bound === "1") return;
+  form.dataset.bound = "1";
+
+  // Star rating UI
+  function paintStars(val) {
+    stars.forEach((s) => {
+      const on = Number(s.dataset.rating) <= Number(val);
+      s.classList.toggle("bi-star-fill", on);
+      s.classList.toggle("text-warning", on);
+      s.classList.toggle("bi-star", !on);
+      s.classList.toggle("text-muted", !on);
+    });
+  }
+  stars.forEach((star) => {
+    star.addEventListener("click", function () {
+      ratingInput.value = this.dataset.rating;
+      paintStars(ratingInput.value);
+    });
+  });
+  paintStars(ratingInput.value || 5);
+
+  // Single click handler (no native submit possible)
+  let isSubmitting = false;
+
+  submitBtn.addEventListener("click", async () => {
+    if (isSubmitting) return;
+    // Simple client-side validity check
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    isSubmitting = true;
+    const originalBtnHTML = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Submitting…';
+
+    try {
+      const formData = new FormData(form); // includes csrfmiddlewaretoken
+      const res = await fetch("{% url 'submit_feedback' %}", {
+        method: "POST",
+        body: formData,
+        headers: { "X-CSRFToken": csrftoken },
+        credentials: "same-origin",
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success) {
+        messageDiv.innerHTML = '<div class="alert alert-success alert-sm">' + (data.message || "Thanks for your feedback!") + "</div>";
+        form.reset();
+        ratingInput.value = "5";
+        paintStars(5);
+      } else {
+        messageDiv.innerHTML = '<div class="alert alert-danger alert-sm">Error: ' + (data.message || "Please try again.") + "</div>";
+      }
+    } catch (err) {
+      messageDiv.innerHTML = '<div class="alert alert-danger alert-sm">An error occurred. Please try again.</div>';
+    } finally {
+      submitBtn.innerHTML = originalBtnHTML;
+      submitBtn.disabled = false;
+      isSubmitting = false;
+      setTimeout(() => (messageDiv.innerHTML = ""), 5000);
+    }
+  });
+});
+</script>
+{% endblock %}
+
+{% endblock %}
+    </div>
+  </div>
+</section>

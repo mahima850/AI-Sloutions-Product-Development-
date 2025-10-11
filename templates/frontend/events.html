@@ -1,0 +1,395 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Events & Workshops - {{ settings.site_name }}{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="bg-primary text-white py-5" style="margin-top: 80px;">
+  <div class="container py-4">
+    <div class="row">
+      <div class="col-lg-8 mx-auto text-center">
+        <h1 class="display-4 fw-bold mb-3">Events & Workshops</h1>
+        <p class="lead">Join us for cutting-edge AI conferences, workshops, and networking events</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Filter Section -->
+<section class="py-4 bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4">
+        <select class="form-select" onchange="filterByType(this.value)">
+          <option value="">All Event Types</option>
+          {% for value, label in types %}
+          <option value="{{ value }}" {% if selected_type == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-lg-4">
+        <select class="form-select" onchange="filterByStatus(this.value)">
+          <option value="">All Events</option>
+          {% for value, label in statuses %}
+          <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-lg-4">
+        <div class="d-flex align-items-center">
+          <i class="bi bi-calendar-event text-primary me-2"></i>
+          <small class="text-muted">Click on events to view details and register</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Events List -->
+<section class="py-5">
+  <div class="container">
+    {% if events %}
+    <div class="row g-4">
+      {% for event in events %}
+      <div class="col-lg-6">
+        <div class="card h-100 shadow-sm border-0 event-card" role="button" tabindex="0"
+             onclick="showEventDetail({{ event.id }})"
+             onkeypress="if(event.key==='Enter'){ showEventDetail({{ event.id }}); }">
+          {% if event.featured_image %}
+          <img src="{{ event.featured_image.url }}" class="card-img-top" alt="{{ event.title }}"
+               style="height: 200px; object-fit: cover;">
+          {% else %}
+          <div class="card-img-top bg-gradient-primary d-flex align-items-center justify-content-center"
+               style="height: 200px;">
+            <i class="bi bi-calendar-event text-white" style="font-size: 3rem;"></i>
+          </div>
+          {% endif %}
+
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <span class="badge bg-primary">{{ event.get_event_type_display }}</span>
+              <span class="badge 
+                {% if event.status == 'upcoming' %}bg-success
+                {% elif event.status == 'ongoing' %}bg-warning
+                {% elif event.status == 'completed' %}bg-secondary
+                {% else %}bg-danger{% endif %}">
+                {{ event.get_status_display }}
+              </span>
+            </div>
+
+            <h5 class="card-title">{{ event.title }}</h5>
+            <p class="card-text text-muted flex-grow-1">{{ event.description|truncatewords:20 }}</p>
+
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <small class="text-muted d-block">
+                  <i class="bi bi-calendar me-1"></i>Date
+                </small>
+                <strong>{{ event.date|date:"M d, Y" }}</strong>
+              </div>
+              <div class="col-6">
+                <small class="text-muted d-block">
+                  <i class="bi bi-clock me-1"></i>Time
+                </small>
+                <strong>{{ event.time|time:"g:i A" }}</strong>
+              </div>
+              <div class="col-6">
+                <small class="text-muted d-block">
+                  <i class="bi bi-geo-alt me-1"></i>Location
+                </small>
+                <strong>{{ event.location|truncatechars:20 }}</strong>
+              </div>
+              <div class="col-6">
+                <small class="text-muted d-block">
+                  <i class="bi bi-currency-dollar me-1"></i>Price
+                </small>
+                <strong>{{ event.price }}</strong>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <small class="text-muted">
+                <i class="bi bi-people me-1"></i>{{ event.registered_count }}/{{ event.capacity }} registered
+              </small>
+              {% if event.is_featured %}
+              <span class="badge bg-warning text-dark">Featured</span>
+              {% endif %}
+            </div>
+
+            <div class="progress mb-3" style="height: 5px;">
+              <div class="progress-bar bg-success" style="width: {{ event.percentage|floatformat:2 }}%"></div>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-outline-primary flex-grow-1"
+                      onclick="event.stopPropagation(); showEventDetail({{ event.id }})">
+                <i class="bi bi-eye me-1"></i>View Details
+              </button>
+              {% if event.status == 'upcoming' %}
+              <button type="button" class="btn btn-success"
+                      onclick="event.stopPropagation(); registerForEvent({{ event.id }})">
+                <i class="bi bi-plus-circle"></i>
+              </button>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="text-center py-5">
+      <i class="bi bi-calendar-x text-muted" style="font-size: 4rem;"></i>
+      <h3 class="mt-3">No Events Found</h3>
+      <p class="text-muted">There are no events available for the selected criteria.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Event Detail Modal -->
+<div class="modal fade" id="eventDetailModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="eventModalTitle">Event Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="eventModalBody">
+        <div class="text-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" id="eventModalFooter">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Registration Modal -->
+<div class="modal fade" id="registrationModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Event Registration</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="registrationForm">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="regName" class="form-label">Full Name *</label>
+            <input type="text" class="form-control" id="regName" required>
+          </div>
+          <div class="mb-3">
+            <label for="regEmail" class="form-label">Email Address *</label>
+            <input type="email" class="form-control" id="regEmail" required>
+          </div>
+          <div class="mb-3">
+            <label for="regPhone" class="form-label">Phone Number</label>
+            <input type="tel" class="form-control" id="regPhone">
+          </div>
+          <div class="mb-3">
+            <label for="regCompany" class="form-label">Company/Organization</label>
+            <input type="text" class="form-control" id="regCompany">
+          </div>
+          <div id="registrationMessage"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Register</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  .event-card {
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .event-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+  }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // --- Filters ---
+  function filterByType(type) { updateFilters('type', type); }
+  function filterByStatus(status) { updateFilters('status', status); }
+  function updateFilters(param, value) {
+    const url = new URL(window.location);
+    if (value) url.searchParams.set(param, value);
+    else url.searchParams.delete(param);
+    window.location.href = url.toString();
+  }
+
+  // --- Event Details Modal Logic ---
+  let detailModalInstance = null;
+  let eventsMap = {};
+
+  document.addEventListener('DOMContentLoaded', function () {
+    // Prepare Bootstrap modal instance once
+    const detailEl = document.getElementById('eventDetailModal');
+    detailModalInstance = new bootstrap.Modal(detailEl, { backdrop: true, keyboard: true });
+
+    // Build a safe map of events from server-rendered data
+    eventsMap = {
+      {% for event in events %}
+      {% if not forloop.first %},{% endif %}
+      {{ event.id }}: {
+        title: "{{ event.title|escapejs }}",
+        description: "{{ event.description|escapejs }}",
+        type: "{{ event.get_event_type_display|escapejs }}",
+        status: "{{ event.get_status_display|escapejs }}",
+        date: "{{ event.date|date:'F d, Y' }}",
+        time: "{{ event.time|time:'g:i A' }}",
+        location: "{{ event.location|escapejs }}",
+        capacity: {{ event.capacity|default:0 }},
+        registered: {{ event.registered_count|default:0 }},
+        price: "{{ event.price|escapejs }}",
+        speakers: [{% for speaker in event.speakers %}{% if not forloop.first %}, {% endif %}"{{ speaker|escapejs }}"{% endfor %}],
+        agenda: [{% for item in event.agenda %}{% if not forloop.first %}, {% endif %}"{{ item|escapejs }}"{% endfor %}]
+      }
+      {% endfor %}
+    };
+  });
+
+  function showEventDetail(eventId) {
+    const event = eventsMap[eventId];
+    const titleEl = document.getElementById('eventModalTitle');
+    const bodyEl = document.getElementById('eventModalBody');
+    const footerEl = document.getElementById('eventModalFooter');
+
+    if (!event) {
+      titleEl.textContent = 'Event Details';
+      bodyEl.innerHTML = `
+        <div class="alert alert-warning mb-0">
+          We couldn't load that event. Please refresh and try again.
+        </div>`;
+      footerEl.innerHTML = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>`;
+      detailModalInstance.show();
+      return;
+    }
+
+    titleEl.textContent = event.title;
+
+    const capacity = Number(event.capacity) || 0;
+    const registered = Number(event.registered) || 0;
+    const percentage = capacity > 0 ? Math.min(100, Math.round((registered / capacity) * 100)) : 0;
+
+    bodyEl.innerHTML = `
+      <div class="row">
+        <div class="col-md-8">
+          <h6 class="fw-bold mb-2">Description</h6>
+          <p>${event.description || '—'}</p>
+
+          ${event.speakers && event.speakers.length ? `
+            <h6 class="fw-bold mb-2">Speakers</h6>
+            <ul>${event.speakers.map(s => `<li>${s}</li>`).join('')}</ul>
+          ` : ''}
+
+          ${event.agenda && event.agenda.length ? `
+            <h6 class="fw-bold mb-2">Agenda</h6>
+            <ul>${event.agenda.map(a => `<li>${a}</li>`).join('')}</ul>
+          ` : ''}
+        </div>
+
+        <div class="col-md-4">
+          <div class="card bg-light">
+            <div class="card-body">
+              <h6 class="card-title">Event Information</h6>
+              <p class="card-text">
+                <strong>Type:</strong> ${event.type}<br>
+                <strong>Status:</strong> ${event.status}<br>
+                <strong>Date:</strong> ${event.date}<br>
+                <strong>Time:</strong> ${event.time}<br>
+                <strong>Location:</strong> ${event.location}<br>
+                <strong>Price:</strong> ${event.price}<br>
+                <strong>Capacity:</strong> ${registered}/${capacity}
+              </p>
+              <div class="progress mb-2">
+                <div class="progress-bar bg-success" role="progressbar" style="width: ${percentage}%"></div>
+              </div>
+              <small class="text-muted">${percentage}% filled</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Footer actions based on human-readable status (e.g., "Upcoming")
+    if ((event.status || '').toLowerCase() === 'upcoming') {
+      footerEl.innerHTML = `
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="registerForEvent(${eventId})">Register Now</button>
+      `;
+    } else {
+      footerEl.innerHTML = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>`;
+    }
+
+    // Finally, show the modal
+    detailModalInstance.show();
+  }
+
+  // --- Registration Flow ---
+  function registerForEvent(eventId) {
+    // Close details, open registration
+    const detailEl = document.getElementById('eventDetailModal');
+    const detailInst = bootstrap.Modal.getInstance(detailEl);
+    if (detailInst) detailInst.hide();
+
+    const regEl = document.getElementById('registrationModal');
+    const regInst = new bootstrap.Modal(regEl);
+    regInst.show();
+
+    document.getElementById('registrationForm').dataset.eventId = eventId;
+  }
+
+  document.getElementById('registrationForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const eventId = this.dataset.eventId;
+    const formData = new FormData();
+    formData.append('name', document.getElementById('regName').value);
+    formData.append('email', document.getElementById('regEmail').value);
+    formData.append('phone', document.getElementById('regPhone').value);
+    formData.append('company', document.getElementById('regCompany').value);
+
+    fetch(`/api/register-event/${eventId}/`, {
+      method: 'POST',
+      body: formData,
+      headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+    })
+    .then(r => r.json())
+    .then(data => {
+      const msg = document.getElementById('registrationMessage');
+      if (data.success) {
+        msg.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+        setTimeout(() => {
+          const regEl = document.getElementById('registrationModal');
+          const regInst = bootstrap.Modal.getInstance(regEl);
+          if (regInst) regInst.hide();
+          location.reload();
+        }, 2000);
+      } else {
+        msg.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+      }
+    })
+    .catch(() => {
+      document.getElementById('registrationMessage').innerHTML =
+        `<div class="alert alert-danger">An error occurred. Please try again.</div>`;
+    });
+  });
+</script>
+{% endblock %}

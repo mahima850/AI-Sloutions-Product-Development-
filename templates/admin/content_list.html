@@ -1,0 +1,456 @@
+{% extends 'admin/base.html' %}
+{% load static %}
+
+{% block title %}
+  {{ content_type|title }} Management - Admin
+{% endblock %}
+
+{% block page_title %}
+  {{ content_type|title }} Management
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="h4 mb-0">
+      {{ content_type|title }} ({{ page_obj.paginator.count }})
+    </h2>
+    <p class="text-muted">Manage your {{ content_type }} content</p>
+  </div>
+
+    {% if content_type != 'newsletter' and content_type != 'inquiries' and content_type != 'feedback' %}
+      <a href="{% url 'content_add' content_type %}" class="btn btn-primary">
+        <i class="bi bi-plus me-1"></i>
+        Add {{ content_type|title|slice:"0:8" }}
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Search and Filters -->
+<div class="card mb-4">
+  <div class="card-body">
+    <form method="get" class="row g-3">
+      <div class="col-md-6">
+        <input
+          type="text"
+          name="search"
+          value="{{ search_query }}"
+          class="form-control"
+          placeholder="Search {{ content_type }}..."
+        />
+      </div>
+      <div class="col-md-6">
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-outline-primary">
+            <i class="bi bi-search me-1"></i>Search
+          </button>
+          {% if search_query %}
+            <a href="{% url 'content_list' content_type %}" class="btn btn-outline-secondary">
+              <i class="bi bi-x me-1"></i>Clear
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Content Table -->
+<div class="card">
+  <div class="card-body">
+    {% if page_obj %}
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              {% if content_type == 'inquiries' %}
+                <th>Name</th>
+                <th>Email</th>
+                <th>Company</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              {% elif content_type == 'feedback' %}
+                <th>Name</th>
+                <th>Company</th>
+                <th>Rating</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              {% elif content_type == 'blog' %}
+                <th>Title</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              {% elif content_type == 'events' %}
+                <th>Title</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+                {% elif content_type == 'gallery' %}
+                <th>Title</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+                {% elif content_type == 'solutions' %}
+                <th>Title</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              {% elif content_type == 'users' %}
+                <th>Username</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Actions</th>
+                {% elif content_type == 'team' %}
+                <th>Name</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              {% endif %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for object in page_obj %}
+              <tr>
+                {% if content_type == 'inquiries' %}
+                  <td>
+                    {{ object.name }}
+                    {% if not object.is_read %}
+                      <span class="badge bg-danger ms-1">New</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ object.email }}</td>
+                  <td>{{ object.company|default:"-" }}</td>
+                  <td>
+                    {% if object.is_responded %}
+                      <span class="badge bg-success">Responded</span>
+                    {% elif object.is_read %}
+                      <span class="badge bg-warning">Read</span>
+                    {% else %}
+                      <span class="badge bg-danger">Unread</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ object.created_at|date:"M d, Y" }}</td>
+                  <td>
+                    <div class="btn-group btn-group-sm">
+                      <button
+                        class="btn btn-outline-primary btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#viewModal{{ object.id }}"
+                      >
+                        <i class="bi bi-eye"></i>
+                      </button>
+                      {% if not object.is_read %}
+                        <button
+                          class="btn btn-outline-success btn-sm mark-read"
+                          data-id="{{ object.id }}"
+                        >
+                          <i class="bi bi-check"></i>
+                        </button>
+                      {% endif %}
+                      <a
+                        href="{% url 'content_delete' content_type object.id %}"
+                        class="btn btn-outline-danger btn-sm"
+                      >
+                        <i class="bi bi-trash"></i>
+                      </a>
+                    </div>
+                  </td>
+
+                {% elif content_type == 'feedback' %}
+                  <td>{{ object.name }}</td>
+                  <td>{{ object.company|default:"-" }}</td>
+                  <td>
+                    {% for i in "12345" %}
+                      <i class="bi bi-star{% if forloop.counter <= object.rating %}-fill text-warning{% else %} text-muted{% endif %}"></i>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% if object.is_approved %}
+                      <span class="badge bg-success">Approved</span>
+                    {% else %}
+                      <span class="badge bg-warning">Pending</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ object.created_at|date:"M d, Y" }}</td>
+                  <td>
+                    <div class="btn-group btn-group-sm">
+                      <button
+                        class="btn btn-outline-primary btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#viewModal{{ object.id }}"
+                      >
+                        <i class="bi bi-eye"></i>
+                      </button>
+                      <button
+                        class="btn btn-outline-success btn-sm toggle-approval"
+                        data-id="{{ object.id }}"
+                      >
+                        <i class="bi bi-{% if object.is_approved %}x{% else %}check{% endif %}"></i>
+                      </button>
+                      <a
+                        href="{% url 'content_delete' content_type object.id %}"
+                        class="btn btn-outline-danger btn-sm"
+                      >
+                        <i class="bi bi-trash"></i>
+                      </a>
+                    </div>
+                  </td>
+
+                {% elif content_type == 'users' %}
+                  <td>{{ object.username }}</td>
+                  <td>{{ object.first_name }} {{ object.last_name }}</td>
+                  <td>{{ object.email }}</td>
+                  <td>
+                    <span class="badge bg-secondary">{{ object.get_role_display }}</span>
+                  </td>
+                  <td>
+                    {% if object.is_active %}
+                      <span class="badge bg-success">Active</span>
+                    {% else %}
+                      <span class="badge bg-danger">Inactive</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div class="btn-group btn-group-sm">
+                      <a
+                        href="{% url 'content_edit' content_type object.id %}"
+                        class="btn btn-outline-primary btn-sm"
+                      >
+                        <i class="bi bi-pencil"></i>
+                      </a>
+                      {% if object != user %}
+                        <a
+                          href="{% url 'content_delete' content_type object.id %}"
+                          class="btn btn-outline-danger btn-sm"
+                        >
+                          <i class="bi bi-trash"></i>
+                        </a>
+                      {% endif %}
+                    </div>
+                  </td>
+
+                {% else %}
+                  <td>{% firstof object.title object.name object.email %}</td>
+                  <td>
+                    {% if object.is_active %}
+                      <span class="badge bg-success">Active</span>
+                    {% elif object.status %}
+                      <span class="badge bg-secondary">{{ object.get_status_display }}</span>
+                    {% else %}
+                      <span class="badge bg-secondary">-</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if object.created_at %}
+                      {{ object.created_at|date:"M d, Y" }}
+                    {% elif object.date_joined %}
+                      {{ object.date_joined|date:"M d, Y" }}
+                    {% else %}
+                      -
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div class="btn-group btn-group-sm">
+                      {% if content_type != 'newsletter' %}
+                        <a
+                          href="{% url 'content_edit' content_type object.id %}"
+                          class="btn btn-outline-primary btn-sm"
+                        >
+                          <i class="bi bi-pencil"></i>
+                        </a>
+                      {% endif %}
+                      <a
+                        href="{% url 'content_delete' content_type object.id %}"
+                        class="btn btn-outline-danger btn-sm"
+                      >
+                        <i class="bi bi-trash"></i>
+                      </a>
+                    </div>
+                  </td>
+                {% endif %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      {% if page_obj.has_other_pages %}
+        <nav aria-label="Page navigation" class="mt-4">
+          <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+              <li class="page-item">
+                <a class="page-link"
+                   href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}">First</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link"
+                   href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">Previous</a>
+              </li>
+            {% endif %}
+
+            <li class="page-item active">
+              <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            </li>
+
+            {% if page_obj.has_next %}
+              <li class="page-item">
+                <a class="page-link"
+                   href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">Next</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link"
+                   href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}">Last</a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      {% endif %}
+
+    {% else %}
+      <div class="text-center py-5">
+        <i class="bi bi-inbox fs-1 text-muted"></i>
+        <h5 class="mt-3">No {{ content_type }} found</h5>
+        <p class="text-muted">
+          {% if search_query %}
+            No results found for "{{ search_query }}". Try a different search term.
+          {% else %}
+            There are no {{ content_type }} yet.
+          {% endif %}
+        </p>
+        {% if content_type != 'newsletter' and content_type != 'inquiries' and content_type != 'feedback' %}
+          <a href="{% url 'content_add' content_type %}" class="btn btn-primary">
+            <i class="bi bi-plus me-1"></i>
+            Add First {{ content_type|title|slice:"0:-1" }}
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Modals for viewing content details -->
+{% for object in page_obj %}
+  {% if content_type == 'inquiries' or content_type == 'feedback' %}
+    <div class="modal fade" id="viewModal{{ object.id }}" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              {% if content_type == 'inquiries' %}
+                Inquiry from {{ object.name }}
+              {% else %}
+                Feedback from {{ object.name }}
+              {% endif %}
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            {% if content_type == 'inquiries' %}
+              <div class="row mb-3">
+                <div class="col-sm-3"><strong>Name:</strong></div>
+                <div class="col-sm-9">{{ object.name }}</div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-3"><strong>Email:</strong></div>
+                <div class="col-sm-9">{{ object.email }}</div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-3"><strong>Company:</strong></div>
+                <div class="col-sm-9">{{ object.company|default:"-" }}</div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-3"><strong>Phone:</strong></div>
+                <div class="col-sm-9">{{ object.phone|default:"-" }}</div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-3"><strong>Message:</strong></div>
+                <div class="col-sm-9">{{ object.message }}</div>
+              </div>
+              {% if object.attachment %}
+                <div class="row mb-3">
+                  <div class="col-sm-3"><strong>Attachment:</strong></div>
+                  <div class="col-sm-9">
+                    <a href="{{ object.attachment.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                      <i class="bi bi-download me-1"></i>Download
+                    </a>
+                  </div>
+                </div>
+              {% endif %}
+            {% else %}
+              <div class="row mb-3">
+                <div class="col-sm-3"><strong>Rating:</strong></div>
+                <div class="col-sm-9">
+                  {% for i in "12345" %}
+                    <i class="bi bi-star{% if forloop.counter <= object.rating %}-fill text-warning{% else %} text-muted{% endif %}"></i>
+                  {% endfor %}
+                  ({{ object.rating }}/5)
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-3"><strong>Comment:</strong></div>
+                <div class="col-sm-9">{{ object.comment }}</div>
+              </div>
+            {% endif %}
+            <div class="row mb-3">
+              <div class="col-sm-3"><strong>Date:</strong></div>
+              <div class="col-sm-9">{{ object.created_at|date:"F d, Y g:i A" }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endfor %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const csrftoken = "{{ csrf_token }}";
+
+    // Mark as read functionality
+    document.querySelectorAll(".mark-read").forEach((button) => {
+      button.addEventListener("click", function () {
+        const id = this.dataset.id;
+        fetch("{% url 'mark_as_read' %}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken,
+          },
+          body: JSON.stringify({ id }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) location.reload();
+          });
+      });
+    });
+
+    // Toggle approval functionality
+    document.querySelectorAll(".toggle-approval").forEach((button) => {
+      button.addEventListener("click", function () {
+        const id = this.dataset.id;
+        fetch("{% url 'toggle_approval' %}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken,
+          },
+          body: JSON.stringify({ id }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) location.reload();
+          });
+      });
+    });
+  });
+</script>
+{% endblock %}

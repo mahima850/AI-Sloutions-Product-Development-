@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Research Articles - {{ settings.site_name }}{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+ <section class="bg-primary text-white py-5" style="margin-top: 80px;">
+    <div class="container py-4">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 fw-bold mb-3">Research Articles & Papers</h1>
+                <p class="lead">Access comprehensive research papers, industry reports, and technical documentation</p>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Filter Section -->
+<section class="py-4 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <select class="form-select" onchange="filterByType(this.value)">
+                    <option value="">All Article Types</option>
+                    {% for value, label in types %}
+                    <option value="{{ value }}" {% if selected_type == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-6">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-info-circle text-primary me-2"></i>
+                    <small class="text-muted">Click on articles to view details or download PDF files</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Articles Grid -->
+<section class="py-5">
+    <div class="container">
+        {% if page_obj %}
+        <div class="row g-4">
+            {% for article in page_obj %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="badge bg-primary">{{ article.get_article_type_display }}</span>
+                            {% if article.is_featured %}
+                            <span class="badge bg-warning text-dark">Featured</span>
+                            {% endif %}
+                        </div>
+                        
+                        <h5 class="card-title">{{ article.title }}</h5>
+                        <p class="card-text text-muted flex-grow-1">{{ article.description|truncatewords:20 }}</p>
+                        
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                <i class="bi bi-person me-1"></i>{{ article.author.first_name }} {{ article.author.last_name }}
+                            </small>
+                            <br>
+                            <small class="text-muted">
+                                <i class="bi bi-calendar me-1"></i>{{ article.published_at|date:"F d, Y" }}
+                            </small>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <small class="text-muted">
+                                <i class="bi bi-clock me-1"></i>{{ article.read_time }} min read
+                            </small>
+                            <small class="text-muted">
+                                <i class="bi bi-download me-1"></i>{{ article.download_count }} downloads
+                            </small>
+                        </div>
+                        
+                        <!-- Tags -->
+                        {% if article.tags %}
+                        <div class="mb-3">
+                            {% for tag in article.tags %}
+                            <span class="badge bg-light text-dark me-1" style="font-size: 0.7rem;">#{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-primary flex-grow-1" onclick="showArticleDetail({{ article.id }})">
+                                <i class="bi bi-eye me-1"></i>View Details
+                            </button>
+                            {% if article.pdf_file %}
+                            <a href="{% url 'download_article' article.id %}" class="btn btn-success">
+                                <i class="bi bi-download"></i>
+                            </a>
+                            {% elif article.external_url %}
+                            <a href="{{ article.external_url }}" target="_blank" class="btn btn-success">
+                                <i class="bi bi-box-arrow-up-right"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <nav aria-label="Articles pagination" class="mt-5">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1{% if selected_type %}&type={{ selected_type }}{% endif %}">First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if selected_type %}&type={{ selected_type }}{% endif %}">Previous</a>
+                </li>
+                {% endif %}
+                
+                <li class="page-item active">
+                    <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                </li>
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if selected_type %}&type={{ selected_type }}{% endif %}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if selected_type %}&type={{ selected_type }}{% endif %}">Last</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-file-earmark-text text-muted" style="font-size: 4rem;"></i>
+            <h3 class="mt-3">No Articles Found</h3>
+            <p class="text-muted">There are no research articles available at the moment.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Article Detail Modal -->
+<div class="modal fade" id="articleDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="articleModalTitle">Article Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="articleModalBody">
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function filterByType(type) {
+    const url = new URL(window.location);
+    if (type) {
+        url.searchParams.set('type', type);
+    } else {
+        url.searchParams.delete('type');
+    }
+    url.searchParams.delete('page');
+    window.location.href = url.toString();
+}
+
+function showArticleDetail(articleId) {
+    // For now, show a simple modal with article info
+    const articles = {
+        {% for article in page_obj %}
+        {{ article.id }}: {
+            title: "{{ article.title|escapejs }}",
+            description: "{{ article.description|escapejs }}",
+            author: "{{ article.author.first_name }} {{ article.author.last_name }}",
+            type: "{{ article.get_article_type_display }}",
+            published_at: "{{ article.published_at|date:'F d, Y' }}",
+            read_time: "{{ article.read_time }}",
+            download_count: "{{ article.download_count }}",
+            tags: [{% for tag in article.tags %}"{{ tag|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}]
+        },
+        {% endfor %}
+    };
+    
+    const article = articles[articleId];
+    if (article) {
+        document.getElementById('articleModalTitle').textContent = article.title;
+        document.getElementById('articleModalBody').innerHTML = `
+            <div class="row">
+                <div class="col-md-8">
+                    <h6 class="fw-bold mb-2">Description</h6>
+                    <p>${article.description}</p>
+                    
+                    <h6 class="fw-bold mb-2">Tags</h6>
+                    <div class="mb-3">
+                        ${article.tags.map(tag => `<span class="badge bg-light text-dark me-1">#${tag}</span>`).join('')}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h6 class="card-title">Article Information</h6>
+                            <p class="card-text">
+                                <strong>Type:</strong> ${article.type}<br>
+                                <strong>Author:</strong> ${article.author}<br>
+                                <strong>Published:</strong> ${article.published_at}<br>
+                                <strong>Read Time:</strong> ${article.read_time} min<br>
+                                <strong>Downloads:</strong> ${article.download_count}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        const modal = new bootstrap.Modal(document.getElementById('articleDetailModal'));
+        modal.show();
+    }
+}
+</script>
+{% endblock %}

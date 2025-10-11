@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ post.title }} - Blog - {{ settings.site_name }}{% endblock %}
+
+{% block content %}
+<article class="py-5" style="margin-top: 80px;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <!-- Post Header -->
+                <header class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="badge bg-primary">{{ post.get_category_display }}</span>
+                        <small class="text-muted">{{ post.read_time }} min read</small>
+                    </div>
+                    
+                    <h1 class="display-5 fw-bold mb-3">{{ post.title }}</h1>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-flex align-items-center">
+                            <img src="https://media.istockphoto.com/id/2181878736/vector/single-gray-circle-with-a-simple-human-silhouette-the-background-is-light-gray-minimalistic.jpg?s=612x612&w=0&k=20&c=y-d6LLvXd5kG5m92gmwhNwWgQ_5snfpMvYdhunzpq5M=" 
+                                 class="rounded-circle me-3" alt="{{ post.author.first_name }}" 
+                                 style="width: 40px; height: 40px; object-fit: cover;">
+                            <div>
+                                <h6 class="mb-0">{{ post.author.first_name }} {{ post.author.last_name }}</h6>
+                                <small class="text-muted">{{ post.published_at|date:"F d, Y" }}</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <small class="text-muted">
+                                <i class="bi bi-eye me-1"></i>{{ post.views_count }} views
+                            </small>
+                            <div class="d-flex gap-2">
+                                <a href="#" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-share"></i>
+                                </a>
+                                <a href="#" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-bookmark"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if post.featured_image %}
+                    <img src="{{ post.featured_image.url }}" class="img-fluid rounded mb-4" alt="{{ post.title }}">
+                    {% endif %}
+                </header>
+                
+                <!-- Post Content -->
+                <div class="post-content mb-5">
+                    <div class="lead mb-4">{{ post.excerpt }}</div>
+                    
+                    <div class="content">
+                        {{ post.content|linebreaks }}
+                    </div>
+                </div>
+                
+                <!-- Tags -->
+                {% if post.tags %}
+                <div class="mb-4">
+                    <h6 class="fw-bold mb-2">Tags:</h6>
+                    {% for tag in post.tags %}
+                    <span class="badge bg-light text-dark me-2">#{{ tag }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <!-- Navigation -->
+                <nav class="d-flex justify-content-between align-items-center py-4 border-top">
+                    <a href="{% url 'blog' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-left me-2"></i>Back to Blog
+                    </a>
+                    <div class="d-flex gap-2">
+                        <a href="#" class="btn btn-sm btn-outline-secondary" title="Share on Twitter">
+                            <i class="bi bi-twitter"></i>
+                        </a>
+                        <a href="#" class="btn btn-sm btn-outline-secondary" title="Share on LinkedIn">
+                            <i class="bi bi-linkedin"></i>
+                        </a>
+                        <a href="#" class="btn btn-sm btn-outline-secondary" title="Share on Facebook">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        
+        <!-- Related Posts -->
+        {% if related_posts %}
+        <section class="mt-5">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <h3 class="fw-bold mb-4">Related Articles</h3>
+                    <div class="row g-3">
+                        {% for related_post in related_posts %}
+                        <div class="col-md-4">
+                            <div class="card border-0 shadow-sm h-100">
+                                {% if related_post.featured_image %}
+                                <img src="{{ related_post.featured_image.url }}" class="card-img-top" 
+                                     alt="{{ related_post.title }}" style="height: 150px; object-fit: cover;">
+                                {% endif %}
+                                <div class="card-body">
+                                    <span class="badge bg-secondary mb-2">{{ related_post.get_category_display }}</span>
+                                    <h6 class="card-title">
+                                        <a href="{% url 'blog_detail' related_post.slug %}" class="text-decoration-none text-dark">
+                                            {{ related_post.title|truncatechars:60 }}
+                                        </a>
+                                    </h6>
+                                    <small class="text-muted">{{ related_post.published_at|date:"M d, Y" }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+    </div>
+</article>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.post-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+.post-content h2, .post-content h3, .post-content h4 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.post-content p {
+    margin-bottom: 1.5rem;
+}
+
+.post-content blockquote {
+    border-left: 4px solid var(--bs-primary);
+    padding-left: 1rem;
+    margin: 2rem 0;
+    font-style: italic;
+    background-color: var(--bs-light);
+    padding: 1rem;
+}
+</style>
+{% endblock %}

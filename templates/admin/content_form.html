@@ -1,0 +1,78 @@
+{% extends 'admin/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {% if is_edit %}Edit{% else %}Add{% endif %} {{ content_type|title }} - Admin
+{% endblock %}
+
+{% block page_title %}
+    {% if is_edit %}Edit{% else %}Add{% endif %} {{ content_type|title }}
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-{% if is_edit %}pencil{% else %}plus{% endif %} me-2"></i>
+                    {% if is_edit %}Edit{% else %}Add New{% endif %} {{ content_type|title }}
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    {% if form %}
+                        {% for field in form %}
+                            <div class="mb-3">
+                                {{ field.label_tag }}
+
+                                {% if field.field.widget.input_type == "file" %}
+                                    {{ field }}
+                                    {% if field.value %}
+                                        <div class="mt-1">
+                                            Current file: 
+                                            <a href="{{ field.value.url }}" target="_blank">View</a>
+                                        </div>
+                                    {% endif %}
+                                {% elif field.field.widget.input_type == "checkbox" %}
+                                    <div class="form-check">
+                                        {{ field }}
+                                        {{ field.label_tag }}
+                                    </div>
+                                {% elif field.name == "features" or field.name == "benefits" or field.name == "use_cases" or field.name == "faqs" %}
+                                    <textarea class="form-control" name="{{ field.name }}" rows="4">{{ field.value }}</textarea>
+                                {% else %}
+                                    {{ field }}
+                                {% endif %}
+
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+
+                                {% if field.errors %}
+                                    <div class="text-danger mt-1">{{ field.errors }}</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Full form implementation is pending for {{ content_type }}.
+                        </div>
+                    {% endif %}
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            {% if is_edit %}Update{% else %}Create{% endif %} {{ content_type|title }}
+                        </button>
+                        <a href="{% url 'content_list' content_type %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

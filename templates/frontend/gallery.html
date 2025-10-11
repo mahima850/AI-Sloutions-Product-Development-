@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Event Gallery - {{ settings.site_name }}{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="bg-primary text-white py-5" style="margin-top: 80px;">
+    <div class="container py-4">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 fw-bold mb-3">Event Gallery</h1>
+                <p class="lead">Explore moments from our conferences, workshops, and special events</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Filter Section -->
+<section class="py-4 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <select class="form-select" onchange="filterByCategory(this.value)">
+                    <option value="">All Event Types</option>
+                    {% for value, label in categories %}
+                    <option value="{{ value }}" {% if selected_category == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-6">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-images text-primary me-2"></i>
+                    <small class="text-muted">Click on images to view larger version</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Gallery Grid -->
+<section class="py-5">
+    <div class="container">
+        {% if gallery_items %}
+        <div class="row g-4">
+            {% for item in gallery_items %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card shadow-sm border-0 h-100 gallery-item" data-bs-toggle="modal" data-bs-target="#galleryModal" 
+                     onclick="showGalleryItem({{ item.id }})">
+                    <div class="position-relative overflow-hidden">
+                        {% if item.image %}
+                        <img src="{{ item.image.url }}" class="card-img-top gallery-image" alt="{{ item.title }}" 
+                             style="height: 250px; object-fit: cover; transition: transform 0.3s;">
+                        {% else %}
+                        <div class="card-img-top bg-gradient-primary d-flex align-items-center justify-content-center" 
+                             style="height: 250px;">
+                            <i class="bi bi-image text-white" style="font-size: 3rem;"></i>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <span class="badge bg-dark bg-opacity-75">{{ item.get_category_display }}</span>
+                        </div>
+                        
+                        {% if item.is_featured %}
+                        <div class="position-absolute top-0 start-0 m-2">
+                            <span class="badge bg-warning text-dark">Featured</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="card-body">
+                        <h5 class="card-title">{{ item.title }}</h5>
+                        <p class="card-text text-muted">{{ item.description|truncatewords:15 }}</p>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="bi bi-calendar me-1"></i>{{ item.event_date|date:"M d, Y" }}
+                            </small>
+                            <small class="text-muted">
+                                <i class="bi bi-geo-alt me-1"></i>{{ item.location|truncatechars:15 }}
+                            </small>
+                        </div>
+                        
+                        <div class="mt-2">
+                            <small class="text-primary fw-bold">{{ item.event_name }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-images text-muted" style="font-size: 4rem;"></i>
+            <h3 class="mt-3">No Gallery Items Found</h3>
+            <p class="text-muted">There are no gallery items available at the moment.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Gallery Modal -->
+<div class="modal fade" id="galleryModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="row g-0">
+                    <div class="col-lg-8">
+                        <img id="modalImage" src="" class="img-fluid w-100" alt="" style="max-height: 80vh; object-fit: contain;">
+                    </div>
+                    <div class="col-lg-4 p-4">
+                        <div class="h-100 d-flex flex-column">
+                            <div class="mb-3">
+                                <span id="modalCategory" class="badge bg-primary mb-2"></span>
+                                <h4 id="modalTitle" class="fw-bold"></h4>
+                                <p id="modalDescription" class="text-muted"></p>
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <hr>
+                                <div class="row g-3">
+                                    <div class="col-6">
+                                        <small class="text-muted d-block">Event Date</small>
+                                        <span id="modalDate" class="fw-bold"></span>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted d-block">Location</small>
+                                        <span id="modalLocation" class="fw-bold"></span>
+                                    </div>
+                                    <div class="col-12">
+                                        <small class="text-muted d-block">Event Name</small>
+                                        <span id="modalEventName" class="fw-bold text-primary"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.gallery-item {
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.gallery-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+}
+
+.gallery-item:hover .gallery-image {
+    transform: scale(1.05);
+}
+
+.gallery-item .card-body {
+    transition: background-color 0.3s;
+}
+
+.gallery-item:hover .card-body {
+    background-color: var(--bs-light);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function filterByCategory(category) {
+    const url = new URL(window.location);
+    if (category) {
+        url.searchParams.set('category', category);
+    } else {
+        url.searchParams.delete('category');
+    }
+    window.location.href = url.toString();
+}
+
+function showGalleryItem(itemId) {
+    const galleryItems = {
+        {% for item in gallery_items %}
+        {{ item.id }}: {
+            title: "{{ item.title|escapejs }}",
+            description: "{{ item.description|escapejs }}",
+            category: "{{ item.get_category_display }}",
+            event_date: "{{ item.event_date|date:'F d, Y' }}",
+            location: "{{ item.location|escapejs }}",
+            event_name: "{{ item.event_name|escapejs }}",
+            image: "{% if item.image %}{{ item.image.url }}{% endif %}"
+        },
+        {% endfor %}
+    };
+    
+    const item = galleryItems[itemId];
+    if (item) {
+        document.getElementById('modalImage').src = item.image;
+        document.getElementById('modalImage').alt = item.title;
+        document.getElementById('modalCategory').textContent = item.category;
+        document.getElementById('modalTitle').textContent = item.title;
+        document.getElementById('modalDescription').textContent = item.description;
+        document.getElementById('modalDate').textContent = item.event_date;
+        document.getElementById('modalLocation').textContent = item.location;
+        document.getElementById('modalEventName').textContent = item.event_name;
+    }
+}
+</script>
+{% endblock %}

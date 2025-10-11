@@ -1,0 +1,279 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ settings.site_name }} - {{ settings.site_description }}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section bg-gradient-primary text-white py-5" style="margin-top: 80px;">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="bi bi-stars text-warning me-2"></i>
+                    <span class="badge bg-info">AI-Powered Solutions</span>
+                </div>
+                <h1 class="display-4 fw-bold mb-4">
+                    Empowering Businesses with <span class="text-warning">AI</span>
+                </h1>
+                <p class="lead mb-4">
+                    Transform your business operations with cutting-edge artificial intelligence solutions. 
+                    We help companies harness the power of AI to drive innovation, efficiency, and growth.
+                </p>
+                <div class="d-flex flex-column flex-sm-row gap-3">
+                    <a href="{% url 'solutions' %}" class="btn btn-warning btn-lg px-4">
+                        <i class="bi bi-arrow-right me-2"></i>Explore Solutions
+                    </a>
+                    <a href="https://youtu.be/reUZRyXxUs4?si=9YvFVsvGMJGZ6NHf" target="_blank" class="btn btn-outline-light btn-lg px-4">
+                        <i class="bi bi-play-circle me-2"></i>Watch Demo
+</a>
+</div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-animation">
+                    <div class="card shadow-lg">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="bg-light rounded" style="height: 20px; width: 120px;"></div>
+                                <div class="bg-success rounded-circle p-2">
+                                    <div class="bg-light rounded-circle" style="width: 12px; height: 12px;"></div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="bg-primary rounded mb-2" style="height: 12px; width: 100%;"></div>
+                                <div class="bg-primary rounded mb-2" style="height: 12px; width: 75%;"></div>
+                                <div class="bg-primary rounded" style="height: 12px; width: 50%;"></div>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-4 text-center">
+                                    <div class="bg-info rounded p-3 mb-2"></div>
+                                    <div class="bg-light rounded" style="height: 8px;"></div>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <div class="bg-success rounded p-3 mb-2"></div>
+                                    <div class="bg-light rounded" style="height: 8px;"></div>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <div class="bg-warning rounded p-3 mb-2"></div>
+                                    <div class="bg-light rounded" style="height: 8px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+{% if about_us %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="display-5 fw-bold mb-3">About AI-Solution</h2>
+                <p class="lead">{{ about_us.company_background|truncatewords:30 }}</p>
+            </div>
+        </div>
+        
+        <div class="row g-4 mb-5">
+            <div class="col-6 col-lg-3 text-center">
+                <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="bi bi-people text-white fs-2"></i>
+                </div>
+                <h3 class="h2 fw-bold">500+</h3>
+                <p class="text-muted">Clients Served</p>
+            </div>
+            <div class="col-6 col-lg-3 text-center">
+                <div class="bg-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="bi bi-award text-white fs-2"></i>
+                </div>
+                <h3 class="h2 fw-bold">50+</h3>
+                <p class="text-muted">AI Models Deployed</p>
+            </div>
+            <div class="col-6 col-lg-3 text-center">
+                <div class="bg-info rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="bi bi-globe text-white fs-2"></i>
+                </div>
+                <h3 class="h2 fw-bold">30+</h3>
+                <p class="text-muted">Countries</p>
+            </div>
+            <div class="col-6 col-lg-3 text-center">
+                <div class="bg-warning rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="bi bi-lightbulb text-white fs-2"></i>
+                </div>
+                <h3 class="h2 fw-bold">98%</h3>
+                <p class="text-muted">Success Rate</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Featured Solutions -->
+{% if featured_solutions %}
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3">Our AI Solutions</h2>
+            <p class="lead">Discover how our cutting-edge AI solutions can transform your industry</p>
+        </div>
+        
+        <div class="row g-4">
+            {% for solution in featured_solutions %}
+            <div class="col-lg-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="bg-primary bg-opacity-10 rounded p-3">
+                                <i class="bi bi-{{ solution.icon }} text-primary fs-4"></i>
+                            </div>
+                            <span class="badge bg-secondary">{{ solution.get_category_display }}</span>
+                        </div>
+                        <h5 class="card-title">{{ solution.title }}</h5>
+                        <p class="card-text text-muted">{{ solution.description }}</p>
+                        <div class="mb-3">
+                            {% for feature in solution.features %}
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-check-circle text-success me-2"></i>
+                                <small>{{ feature }}</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <a href="{% url 'solution_detail' solution.id %}" class="btn btn-outline-primary w-100">
+                            Learn More <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="{% url 'solutions' %}" class="btn btn-primary btn-lg">View All Solutions</a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+
+<!-- Testimonials -->
+{% if testimonials %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-3">
+            <h2 class="display-5 fw-bold mb-3">Client Testimonials</h2>
+            <p class="lead">See what our clients say about their experience with AI-Solution</p>
+        </div>
+
+        <div class="row g-4">
+            {% for testimonial in testimonials %}
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://media.istockphoto.com/id/2181878736/vector/single-gray-circle-with-a-simple-human-silhouette-the-background-is-light-gray-minimalistic.jpg?s=612x612&w=0&k=20&c=y-d6LLvXd5kG5m92gmwhNwWgQ_5snfpMvYdhunzpq5M="
+                                 class="rounded-circle me-3" alt="{{ testimonial.name }}"
+                                 style="width: 30px; height: 50px; object-fit: cover;">
+                            <div>
+                                <h6 class="mb-0">{{ testimonial.name|default:"Anonymous" }}</h6>
+                            </div>
+                            <div class="ms-auto">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= testimonial.rating %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star text-muted"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <blockquote class="blockquote mb-0">
+                            <p>"{{ testimonial.comment|default:"No comment provided." }}"</p>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p>No testimonials have been approved yet.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+
+<!-- Recent Blog Posts -->
+{% if recent_blog_posts %}
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3">Latest AI Insights</h2>
+            <p class="lead">Stay updated with the latest trends and insights in artificial intelligence</p>
+        </div>
+        
+        <div class="row g-4">
+            {% for post in recent_blog_posts %}
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm h-100">
+                    {% if post.featured_image %}
+                    <img src="{{ post.featured_image.url }}" class="card-img-top" alt="{{ post.title }}" style="height: 200px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge bg-secondary">{{ post.get_category_display }}</span>
+                            <small class="text-muted">{{ post.read_time }} min read</small>
+                        </div>
+                        <h5 class="card-title">{{ post.title }}</h5>
+                        <p class="card-text text-muted">{{ post.excerpt }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="bi bi-person me-1"></i>AI-Solution Administrator
+                            </small>
+                            <small class="text-muted">
+                                <i class="bi bi-calendar me-1"></i>{{ post.published_at|date:"M d, Y" }}
+                            </small>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        <a href="{% url 'blog_detail' post.slug %}" class="btn btn-outline-primary w-100">
+                            Read More <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="{% url 'blog' %}" class="btn btn-primary btn-lg">View All Posts</a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="display-5 fw-bold mb-3">Ready to Transform Your Business?</h2>
+        <p class="lead mb-4">Let's discuss how our AI solutions can help you achieve your goals.</p>
+        <a href="{% url 'contact' %}" class="btn btn-warning btn-lg px-5">Get Started Today</a>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.hero-animation {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+</style>
+{% endblock %}

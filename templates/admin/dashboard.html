@@ -1,0 +1,308 @@
+{% extends 'admin/base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - AI-Solution{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0">Welcome back, {{ user.first_name|default:user.username }}!</h1>
+                    <p class="text-muted">Here's what's happening with your AI-Solution platform.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'home' %}" class="btn btn-outline-primary" target="_blank">
+                        <i class="bi bi-globe me-1"></i>View Website
+                    </a>
+                    <a href="{% url 'admin_change_password' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-key me-1"></i>Change Password
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Contact Inquiries
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ stats.total_inquiries }}
+                                {% if stats.unread_inquiries %}
+                                    <span class="badge bg-danger ms-2">{{ stats.unread_inquiries }} new</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-envelope-fill fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Customer Feedback
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ stats.total_feedback }}
+                                {% if stats.pending_feedback %}
+                                    <span class="badge bg-warning ms-2">{{ stats.pending_feedback }} pending</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-star-fill fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Blog Posts
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ stats.total_blog_posts }}
+                                {% if stats.draft_posts %}
+                                    <span class="badge bg-secondary ms-2">{{ stats.draft_posts }} drafts</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-file-text-fill fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Newsletter Subscribers
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.newsletter_subscribers }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-people-fill fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Management Shortcuts -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                            <a href="{% url 'content_list' 'inquiries' %}" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-envelope d-block mb-2 fs-4"></i>
+                                <small>Inquiries</small>
+                                {% if stats.unread_inquiries %}
+                                    <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">{{ stats.unread_inquiries }}</span>
+                                {% endif %}
+                            </a>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                            <a href="{% url 'content_list' 'feedback' %}" class="btn btn-outline-success w-100">
+                                <i class="bi bi-star d-block mb-2 fs-4"></i>
+                                <small>Feedback</small>
+                            </a>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                            <a href="{% url 'content_list' 'blog' %}" class="btn btn-outline-info w-100">
+                                <i class="bi bi-file-text d-block mb-2 fs-4"></i>
+                                <small>Blog Posts</small>
+                            </a>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                            <a href="{% url 'content_list' 'events' %}" class="btn btn-outline-warning w-100">
+                                <i class="bi bi-calendar-event d-block mb-2 fs-4"></i>
+                                <small>Events</small>
+                            </a>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                            <a href="{% url 'content_list' 'solutions' %}" class="btn btn-outline-secondary w-100">
+                                <i class="bi bi-gear d-block mb-2 fs-4"></i>
+                                <small>Solutions</small>
+                            </a>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                            <a href="{% url 'content_list' 'users' %}" class="btn btn-outline-dark w-100">
+                                <i class="bi bi-people d-block mb-2 fs-4"></i>
+                                <small>Users</small>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity and Quick Info -->
+    <div class="row">
+        <!-- Recent Inquiries -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Inquiries</h6>
+                    <a href="{% url 'content_list' 'inquiries' %}" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_inquiries %}
+                        {% for inquiry in recent_inquiries %}
+                            <div class="d-flex align-items-center py-2 {% if not forloop.last %}border-bottom{% endif %}">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-person-circle fs-4 text-muted"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <div class="fw-bold">{{ inquiry.name }}</div>
+                                    <div class="text-muted small">{{ inquiry.company|default:"No company" }}</div>
+                                    <div class="small">{{ inquiry.message|truncatewords:10 }}</div>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    {% if not inquiry.is_read %}
+                                        <span class="badge bg-danger">New</span>
+                                    {% endif %}
+                                    <div class="text-muted small">{{ inquiry.created_at|timesince }} ago</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted text-center py-3">No recent inquiries</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Events -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Upcoming Events</h6>
+                    <a href="{% url 'content_list' 'events' %}" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if upcoming_events %}
+                        {% for event in upcoming_events %}
+                            <div class="d-flex align-items-center py-2 {% if not forloop.last %}border-bottom{% endif %}">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-calendar-event fs-4 text-warning"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <div class="fw-bold">{{ event.title }}</div>
+                                    <div class="text-muted small">{{ event.location }}</div>
+                                    <div class="small">{{ event.date|date:"M d, Y" }} at {{ event.time|time:"g:i A" }}</div>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <span class="badge bg-info">{{ event.get_event_type_display }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted text-center py-3">No upcoming events</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Log -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Activity</h6>
+                </div>
+                <div class="card-body">
+                    {% if recent_activities %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Action</th>
+                                        <th>Content</th>
+                                        <th>Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for activity in recent_activities %}
+                                        <tr>
+                                            <td>{{ activity.user.username }}</td>
+                                            <td>
+                                                <span class="badge bg-secondary">{{ activity.get_action_display }}</span>
+                                            </td>
+                                            <td>{{ activity.content_type }} - {{ activity.object_repr|truncatewords:5 }}</td>
+                                            <td class="text-muted small">{{ activity.timestamp|timesince }} ago</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center py-3">No recent activity</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.border-left-primary {
+    border-left: .25rem solid #4e73df!important;
+}
+.border-left-success {
+    border-left: .25rem solid #1cc88a!important;
+}
+.border-left-info {
+    border-left: .25rem solid #36b9cc!important;
+}
+.border-left-warning {
+    border-left: .25rem solid #f6c23e!important;
+}
+.text-xs {
+    font-size: .7rem;
+}
+.font-weight-bold {
+    font-weight: 700!important;
+}
+.text-gray-800 {
+    color: #5a5c69!important;
+}
+.text-gray-300 {
+    color: #dddfeb!important;
+}
+</style>
+{% endblock %}

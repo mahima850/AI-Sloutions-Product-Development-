@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ solution.title }} - {{ settings.site_name }}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-gradient-primary text-white py-5" style="margin-top: 80px;">
+    <div class="container py-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <nav aria-label="breadcrumb" class="mb-3">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-light">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'solutions' %}" class="text-light">Solutions</a></li>
+                        <li class="breadcrumb-item active text-warning" aria-current="page">{{ solution.title }}</li>
+                    </ol>
+                </nav>
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-white bg-opacity-20 rounded p-3 me-3">
+                        <i class="bi bi-{{ solution.icon }} fs-2"></i>
+                    </div>
+                    <div>
+                        <span class="badge bg-warning text-dark">{{ solution.get_category_display }}</span>
+                        <h1 class="display-5 fw-bold mt-2 mb-0">{{ solution.title }}</h1>
+                    </div>
+                </div>
+                <p class="lead">{{ solution.description }}</p>
+                <div class="d-flex gap-3">
+                    <a href="#learn-more" class="btn btn-warning btn-lg">
+                        <i class="bi bi-arrow-down me-2"></i>Learn More
+                    </a>
+                    <a href="{% url 'contact' %}" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-envelope me-2"></i>Get Started
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                {% if solution.image %}
+                <img src="{{ solution.image.url }}" class="img-fluid rounded shadow" alt="{{ solution.title }}">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<section class="py-5" id="learn-more">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Detailed Content -->
+                {% if solution.detailed_content %}
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h2 class="h3 mb-3">Overview</h2>
+                        {{ solution.detailed_content|safe }}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Features -->
+                {% if solution.features %}
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h2 class="h3 mb-4">Key Features</h2>
+                        <div class="row g-3">
+                            {% for feature in solution.features %}
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start">
+                                    <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3 flex-shrink-0">
+                                        <i class="bi bi-check-circle text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <p class="mb-0">{{ feature }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Benefits -->
+                {% if solution.benefits %}
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h2 class="h3 mb-4">Benefits</h2>
+                        <div class="row g-3">
+                            {% for benefit in solution.benefits %}
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start">
+                                    <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3 flex-shrink-0">
+                                        <i class="bi bi-award text-success"></i>
+                                    </div>
+                                    <div>
+                                        <p class="mb-0">{{ benefit }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Use Cases -->
+                {% if solution.use_cases %}
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h2 class="h3 mb-4">Use Cases</h2>
+                        <div class="row g-3">
+                            {% for use_case in solution.use_cases %}
+                            <div class="col-md-6">
+                                <div class="card bg-light border-0">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex align-items-start">
+                                            <div class="bg-info bg-opacity-20 rounded-circle p-2 me-3 flex-shrink-0">
+                                                <i class="bi bi-lightbulb text-info"></i>
+                                            </div>
+                                            <p class="mb-0 small">{{ use_case }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- FAQs -->
+                {% if solution.faqs %}
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h2 class="h3 mb-4">Frequently Asked Questions</h2>
+                        <div class="accordion" id="faqAccordion">
+                            {% for faq in solution.faqs %}
+                            <div class="accordion-item border-0 mb-3">
+                                <h3 class="accordion-header">
+                                    <button class="accordion-button{% if not forloop.first %} collapsed{% endif %}" 
+                                            type="button" 
+                                            data-bs-toggle="collapse" 
+                                            data-bs-target="#faq{{ forloop.counter }}" 
+                                            aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" 
+                                            aria-controls="faq{{ forloop.counter }}">
+                                        {{ faq.question }}
+                                    </button>
+                                </h3>
+                                <div id="faq{{ forloop.counter }}" 
+                                     class="accordion-collapse collapse{% if forloop.first %} show{% endif %}" 
+                                     data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        {{ faq.answer }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- CTA Card -->
+                <div class="card border-0 shadow-sm mb-4 bg-primary text-white">
+                    <div class="card-body p-4 text-center">
+                        <i class="bi bi-rocket fs-1 mb-3"></i>
+                        <h4>Ready to Get Started?</h4>
+                        <p class="mb-3">Contact our team to learn more about how this solution can benefit your organization.</p>
+                        <a href="{% url 'contact' %}" class="btn btn-warning btn-lg w-100">
+                            <i class="bi bi-envelope me-2"></i>Contact Us
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Solution Stats -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="card-title">Solution Category</h5>
+                        <span class="badge bg-secondary fs-6">{{ solution.get_category_display }}</span>
+                        
+                        <hr class="my-3">
+                        
+                        <div class="row text-center g-3">
+                            <div class="col-4">
+                                <div class="bg-success bg-opacity-10 rounded p-3 mb-2">
+                                    <i class="bi bi-people text-success fs-4"></i>
+                                </div>
+                                <small class="text-muted">Enterprise Ready</small>
+                            </div>
+                            <div class="col-4">
+                                <div class="bg-info bg-opacity-10 rounded p-3 mb-2">
+                                    <i class="bi bi-shield-check text-info fs-4"></i>
+                                </div>
+                                <small class="text-muted">Secure</small>
+                            </div>
+                            <div class="col-4">
+                                <div class="bg-warning bg-opacity-10 rounded p-3 mb-2">
+                                    <i class="bi bi-graph-up text-warning fs-4"></i>
+                                </div>
+                                <small class="text-muted">Scalable</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Related Solutions -->
+                {% if related_solutions %}
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h5 class="card-title">Related Solutions</h5>
+                        {% for related in related_solutions %}
+                        <div class="d-flex align-items-center mb-3{% if not forloop.last %} pb-3 border-bottom{% endif %}">
+                            <div class="bg-primary bg-opacity-10 rounded p-2 me-3">
+                                <i class="bi bi-{{ related.icon }} text-primary"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">
+                                    <a href="{% url 'solution_detail' related.id %}" class="text-decoration-none">
+                                        {{ related.title }}
+                                    </a>
+                                </h6>
+                                <small class="text-muted">{{ related.description|truncatewords:8 }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-light">
+    <div class="container text-center">
+        <h2 class="display-6 fw-bold mb-3">Transform Your {{ solution.get_category_display }} Operations</h2>
+        <p class="lead mb-4">Join hundreds of organizations already benefiting from our AI solutions.</p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="{% url 'contact' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-calendar me-2"></i>Schedule a Demo
+            </a>
+            <a href="{% url 'solutions' %}" class="btn btn-outline-primary btn-lg">
+                <i class="bi bi-arrow-left me-2"></i>View All Solutions
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: rgba(13, 110, 253, 0.1);
+    color: #0d6efd;
+}
+
+.accordion-button:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+</style>
+{% endblock %}
