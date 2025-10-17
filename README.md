@@ -101,4 +101,3 @@ Developed using **Django 5.x**, **Python 3.x**, **Bootstrap 5**, and **MySQL**, 
 ### 1️⃣ Clone the Repository  
 ```bash
 git clone https://github.com/mahimasaru/ai-solution.git
-cd ai-solution
